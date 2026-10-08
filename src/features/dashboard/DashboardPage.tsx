@@ -22,6 +22,7 @@ import {
   LogoutIcon,
   MenuBookIcon,
   PlayIcon,
+  TrophyIcon,
 } from '../../core/components/icons';
 import type { Table, TableStatus } from '../../core/api/types';
 
@@ -202,9 +203,14 @@ export function DashboardPage() {
               <span className="dashboard-header__tagline">Quản lý quán bi-a</span>
             </div>
           </div>
-          <button className="dashboard-header__logout" onClick={logout}>
-            <LogoutIcon size={15} /> <span>Đăng xuất</span>
-          </button>
+          <div className="dashboard-header__top-actions">
+            <Link to="/tournaments" className="dashboard-header__tournament-link">
+              <TrophyIcon size={15} /> <span>Giải đấu</span>
+            </Link>
+            <button className="dashboard-header__logout" onClick={logout}>
+              <LogoutIcon size={15} /> <span>Đăng xuất</span>
+            </button>
+          </div>
         </div>
         <nav className="dashboard-header__nav">
           <Link to="/tables/manage">

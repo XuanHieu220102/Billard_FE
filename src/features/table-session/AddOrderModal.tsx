@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Modal } from '../../core/components/Modal';
 import { useToast } from '../../core/components/ToastProvider';
-import { CartIcon, DrinkIcon, FoodIcon } from '../../core/components/icons';
+import { CartIcon, DrinkIcon, FoodIcon, ServiceIcon } from '../../core/components/icons';
 import {
   addSessionOrder,
   deleteSessionOrder,
@@ -27,7 +27,7 @@ export function AddOrderModal({ sessionId, tableLabel, onClose }: AddOrderModalP
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [initialized, setInitialized] = useState(false);
 
-  const { data: foodItems } = useQuery({ queryKey: ['food-items'], queryFn: getFoodItems });
+  const { data: foodItems } = useQuery({ queryKey: ['food-items'], queryFn: () => getFoodItems() });
   const { data: drinkItems } = useQuery({ queryKey: ['drink-items'], queryFn: getDrinkItems });
   const { data: existingOrders } = useQuery({
     queryKey: ['session-orders', sessionId],
@@ -47,7 +47,9 @@ export function AddOrderModal({ sessionId, tableLabel, onClose }: AddOrderModalP
   }, [existingOrders, initialized]);
 
   const items: CatalogItem[] = [
-    ...(foodItems ?? []).filter((i) => i.isActive).map((i) => ({ ...i, itemType: 'FOOD' as ItemType })),
+    ...(foodItems ?? [])
+      .filter((i) => i.isActive)
+      .map((i) => ({ ...i, itemType: i.category as ItemType })),
     ...(drinkItems ?? [])
       .filter((i) => i.isActive)
       .map((i) => ({ ...i, itemType: 'DRINK' as ItemType })),
@@ -119,7 +121,9 @@ export function AddOrderModal({ sessionId, tableLabel, onClose }: AddOrderModalP
           return (
             <div key={item.id} className={`order-item-row${outOfStock ? ' order-item-row--disabled' : ''}`}>
               <div className="order-item-row__icon">
-                {item.itemType === 'FOOD' ? <FoodIcon /> : <DrinkIcon />}
+                {item.itemType === 'FOOD' && <FoodIcon />}
+                {item.itemType === 'DRINK' && <DrinkIcon />}
+                {item.itemType === 'SERVICE' && <ServiceIcon />}
               </div>
               <div className="order-item-row__info">
                 <span className="order-item-row__name">{item.name}</span>

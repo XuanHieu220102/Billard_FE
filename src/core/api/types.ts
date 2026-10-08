@@ -33,12 +33,14 @@ export interface TableSession {
   pricePerHourSnapshot: string;
 }
 
-export type ItemType = 'FOOD' | 'DRINK';
+export type ItemType = 'FOOD' | 'DRINK' | 'SERVICE';
+export type FoodItemCategory = 'FOOD' | 'SERVICE';
 
 export interface FoodItem {
   id: string;
   name: string;
   price: string;
+  category: FoodItemCategory;
   isActive: boolean;
 }
 
@@ -103,4 +105,49 @@ export interface ReportSummary {
   sessionsStartedCount: number;
   sessionsByHour: HourlySessionCount[];
   topFoodDrinkItems: TopFoodDrinkItem[];
+}
+
+export type TournamentFormat = 'SINGLE_ELIMINATION' | 'DOUBLE_ELIMINATION';
+export type TournamentStatus = 'DRAFT' | 'SETUP' | 'IN_PROGRESS' | 'COMPLETED';
+export type MatchBracket = 'WINNER' | 'LOSER' | 'GRAND_FINAL';
+export type MatchStatus = 'PENDING' | 'READY' | 'COMPLETED';
+
+export interface Tournament {
+  id: string;
+  name: string;
+  format: TournamentFormat;
+  eventDate: string | null;
+  prize: string | null;
+  note: string | null;
+  status: TournamentStatus;
+  participantCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TournamentParticipant {
+  id: string;
+  displayName: string;
+  displayOrder: number;
+}
+
+export interface TournamentMatch {
+  id: string;
+  bracket: MatchBracket;
+  round: number;
+  matchIndex: number;
+  participant1Id: string | null;
+  participant2Id: string | null;
+  winnerId: string | null;
+  status: MatchStatus;
+  nextMatchId: string | null;
+  nextMatchSlot: number | null;
+  loserNextMatchId: string | null;
+  loserNextMatchSlot: number | null;
+}
+
+export interface TournamentDetail {
+  tournament: Tournament;
+  participants: TournamentParticipant[];
+  matches: TournamentMatch[];
 }

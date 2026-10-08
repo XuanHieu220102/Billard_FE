@@ -9,6 +9,9 @@ import { TableManagePage } from './features/table/TableManagePage';
 import { CatalogPage } from './features/food-item/CatalogPage';
 import { HistoryPage } from './features/history/HistoryPage';
 import { ReportPage } from './features/report/ReportPage';
+import { TournamentListPage } from './features/tournament/TournamentListPage';
+import { TournamentFormPage } from './features/tournament/TournamentFormPage';
+import { TournamentBracketPage } from './features/tournament/TournamentBracketPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -65,6 +68,38 @@ export function App() {
               element={
                 <RequireAuth>
                   <ReportPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/tournaments"
+              element={
+                <RequireAuth>
+                  <TournamentListPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/tournaments/new"
+              element={
+                <RequireAuth>
+                  <TournamentFormPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/tournaments/:tournamentId/edit"
+              element={
+                <RequireAuth>
+                  <TournamentFormPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/tournaments/:tournamentId"
+              element={
+                <RequireAuth>
+                  <TournamentBracketPage />
                 </RequireAuth>
               }
             />

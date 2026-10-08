@@ -1,14 +1,20 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, type ReactNode } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFoodItem, deactivateFoodItem, getFoodItems, updateFoodItem } from './foodItemApi';
 import { useToast } from '../../core/components/ToastProvider';
-import { FoodIcon } from '../../core/components/icons';
-import type { FoodItem } from '../../core/api/types';
+import type { FoodItem, FoodItemCategory } from '../../core/api/types';
 
-export function FoodItemManagePage() {
+interface FoodItemManagePageProps {
+  category: FoodItemCategory;
+  icon: ReactNode;
+  addLabel: string;
+}
+
+export function FoodItemManagePage({ category, icon, addLabel }: FoodItemManagePageProps) {
   const queryClient = useQueryClient();
   const toast = useToast();
-  const { data: items } = useQuery({ queryKey: ['food-items'], queryFn: getFoodItems });
+  const queryKey = ['food-items', category];
+  const { data: items } = useQuery({ queryKey, queryFn: () => getFoodItems(category) });
 
   const [editing, setEditing] = useState<FoodItem | null>(null);
   const [name, setName] = useState('');
@@ -44,9 +50,9 @@ export function FoodItemManagePage() {
       if (editing) {
         await updateFoodItem(editing.id, { name, price });
       } else {
-        await createFoodItem({ name, price });
+        await createFoodItem({ name, price, category });
       }
-      queryClient.invalidateQueries({ queryKey: ['food-items'] });
+      queryClient.invalidateQueries({ queryKey });
       toast.success(isEditing ? `Đã lưu món "${name}"` : `Đã thêm món "${name}"`);
       resetForm();
     } catch (err: any) {
@@ -60,7 +66,7 @@ export function FoodItemManagePage() {
     if (!confirm(`Ngừng bán "${item.name}"?`)) return;
     try {
       await deactivateFoodItem(item.id);
-      queryClient.invalidateQueries({ queryKey: ['food-items'] });
+      queryClient.invalidateQueries({ queryKey });
       toast.success(`Đã ngừng bán "${item.name}"`);
     } catch (err: any) {
       toast.error(err?.response?.data?.message ?? 'Không thể ngừng bán món này');
@@ -70,7 +76,7 @@ export function FoodItemManagePage() {
   return (
     <div className="catalog-section">
       <form onSubmit={handleSubmit} className="item-form">
-        <h3>{editing ? `Sửa "${editing.name}"` : 'Thêm món Đồ ăn'}</h3>
+        <h3>{editing ? `Sửa "${editing.name}"` : addLabel}</h3>
         <label>
           Tên món
           <input value={name} onChange={(e) => setName(e.target.value)} required />
@@ -101,9 +107,7 @@ export function FoodItemManagePage() {
       <div className="catalog-item-list">
         {items?.map((item) => (
           <div key={item.id} className={`catalog-item-card${!item.isActive ? ' catalog-item-card--inactive' : ''}`}>
-            <div className="catalog-item-card__icon">
-              <FoodIcon size={20} />
-            </div>
+            <div className="catalog-item-card__icon">{icon}</div>
             <div className="catalog-item-card__info">
               <span className="catalog-item-card__name">
                 {item.name}
